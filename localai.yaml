@@ -1,0 +1,41 @@
+# localai.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: localai
+  namespace: ai-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: localai
+  template:
+    metadata:
+      labels:
+        app: localai
+    spec:
+      containers:
+      - name: localai
+        image: localai/localai:latest
+        args:
+          - serve
+          - --models-path
+          - /models/mistral.bin
+        volumeMounts:
+        - name: model
+          mountPath: /models
+      volumes:
+      - name: model
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: localai
+  namespace: ai-chat
+spec:
+  selector:
+    app: localai
+  ports:
+  - port: 8080
+    targetPort: 8080

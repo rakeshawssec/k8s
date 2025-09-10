@@ -1,0 +1,35 @@
+# chathub.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chathub
+  namespace: ai-chat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chathub
+  template:
+    metadata:
+      labels:
+        app: chathub
+    spec:
+      containers:
+      - name: chathub
+        image: rakeshawssec/chathub:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chathub
+  namespace: ai-chat
+spec:
+  selector:
+    app: chathub
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  type: NodePort

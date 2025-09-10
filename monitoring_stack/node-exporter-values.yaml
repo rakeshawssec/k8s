@@ -1,0 +1,9 @@
+prometheus-node-exporter:
+  hostNetwork: false
+  hostPID: false
+  hostIPC: false
+  service:
+    enabled: true
+    port: 9100
+    targetPort: 9100
+    type: ClusterIP
