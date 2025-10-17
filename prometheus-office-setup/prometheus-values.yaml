@@ -1,0 +1,54 @@
+# prometheus-values.yaml
+
+prometheus:
+  prometheusSpec:
+    retention: "15d"                  # keep 15 days of metrics
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "local-path"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 20Gi
+    externalUrl: "http://kube-monitor.local/prometheus"   # added for Ingress subpath
+    routePrefix: /prometheus                                         # keep as default
+
+grafana:
+  enabled: true
+  adminPassword: "Admin@123"          # change to strong password
+  persistence:
+    enabled: true
+    storageClassName: "local-path"
+    size: 5Gi
+  securityContext:
+    runAsUser: 472
+    runAsGroup: 472
+    fsGroup: 472
+  initChownData:
+    enabled: false   # disable broken init container
+  service:
+    type: ClusterIP                   # we’ll expose via Ingress now
+  grafana.ini:
+    server:
+      root_url: "http://kube-monitor.local/grafana"
+      serve_from_sub_path: true
+
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: "local-path"
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+    externalUrl: "http://kube-monitor.local/alert"         # added for Ingress subpath
+    routePrefix: /alert
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
