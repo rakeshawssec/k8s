@@ -1,0 +1,37 @@
+# prometheus-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prometheus-ingress
+  namespace: monitoring
+  labels:
+    app: prometheus
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx   # adjust if your ingress controller uses a different class
+  rules:
+  - host: kube-monitor.local   # you will access Prometheus at http://kube-monitor.local
+    http:
+      paths:
+      - path: /prometheus(/|$)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: kube-prom-stack-kube-prome-prometheus
+            port:
+              number: 9090
+      - path: /alert(/|$)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: kube-prom-stack-kube-prome-alertmanager
+            port:
+              number: 9093
+      - path: /grafana(/|$)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: kube-prom-stack-grafana 
+            port:
+              number: 80
